@@ -22,7 +22,7 @@ function varargout = interfaz(varargin)
 
 % Edit the above text to modify the response to help interfaz
 
-% Last Modified by GUIDE v2.5 13-Nov-2014 10:22:13
+% Last Modified by GUIDE v2.5 16-Nov-2014 23:14:57
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -51,7 +51,6 @@ function interfaz_OpeningFcn(hObject, eventdata, handles, varargin)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 % varargin   command line arguments to interfaz (see VARARGIN)
-
 % Choose default command line output for interfaz
 handles.output = hObject;
 
@@ -72,41 +71,63 @@ function varargout = interfaz_OutputFcn(hObject, eventdata, handles)
 % Get default command line output from handles structure
 varargout{1} = handles.output;
 
+% --- Executes on button press in btnIniciarWebCam.
+function btnIniciarWebCam_Callback(hObject, eventdata, handles)
+% hObject    handle to btnIniciarWebCam (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
 
-% --- Executes on button press in pushbutton1.
-function pushbutton1_Callback(hObject, eventdata, handles)
-% hObject    handle to pushbutton1 (see GCBO)
+video=videoinput('winvideo',1,'MJPG_640x480');
+handles.video=video;
+
+vidRes = get(handles.video, 'VideoResolution');
+nBands = get(handles.video, 'NumberOfBands');
+set(handles.axes1,'Visible','off')
+axes(handles.axes1)
+hImage = image( zeros(vidRes(1), vidRes(2), nBands) );
+
+preview(handles.video, hImage)
+
+guidata(hObject, handles);
+
+
+% --- Executes on button press in btnCapturar.
+function btnCapturar_Callback(hObject, eventdata, handles)
+% hObject    handle to btnCapturar (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+I_original = getsnapshot(handles.video);
+imshow(I_original);
+imwrite(I_original, 'original.jpg');
+
+% --- Executes on button press in btnReconocer.
+function btnReconocer_Callback(hObject, eventdata, handles)
+% hObject    handle to btnReconocer (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+numberPlateExtraction();
+
+
+% --- Executes on button press in btnExportar.
+function btnExportar_Callback(hObject, eventdata, handles)
+% hObject    handle to btnExportar (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
 
-% --- Executes on button press in pushbutton2.
-function pushbutton2_Callback(hObject, eventdata, handles)
-% hObject    handle to pushbutton2 (see GCBO)
+
+function inputPlacaRec_Callback(hObject, eventdata, handles)
+% hObject    handle to inputPlacaRec (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-
-% --- Executes on button press in pushbutton3.
-function pushbutton3_Callback(hObject, eventdata, handles)
-% hObject    handle to pushbutton3 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-
-
-function edit1_Callback(hObject, eventdata, handles)
-% hObject    handle to edit1 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'String') returns contents of edit1 as text
-%        str2double(get(hObject,'String')) returns contents of edit1 as a double
+% Hints: get(hObject,'String') returns contents of inputPlacaRec as text
+%        str2double(get(hObject,'String')) returns contents of inputPlacaRec as a double
 
 
 % --- Executes during object creation, after setting all properties.
-function edit1_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit1 (see GCBO)
+function inputPlacaRec_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to inputPlacaRec (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -115,3 +136,36 @@ function edit1_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
+
+
+% --- Executes on button press in btnSalir.
+function btnSalir_Callback(hObject, eventdata, handles)
+% hObject    handle to btnSalir (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+close(gcbf)
+
+
+
+function inputText_Callback(hObject, eventdata, handles)
+% hObject    handle to inputText (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of inputText as text
+%        str2double(get(hObject,'String')) returns contents of inputText as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function inputText_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to inputText (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
