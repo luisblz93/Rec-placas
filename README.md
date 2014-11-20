@@ -1,4 +1,4 @@
 Rec-placas
 ==========
 
-Reconocimiento de placas de auots
+Reconocimiento de placas de autos

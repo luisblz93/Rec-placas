@@ -107,9 +107,15 @@ function btnMostrarEjemplo_Callback(hObject, eventdata, handles)
 % hObject    handle to btnMostrarEjemplo (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-handles.I_original = imread('ejemplo2.jpg');
-axes(handles.axes1);
-imshow(handles.I_original);
+[filename, pathname]=uigetfile('*.jpg','Selecciona una imagen a procesar','Imágenes ejemplos\');%Abre dialog box(ventana) para elegir la imagen de la placa.
+
+if isequal(filename,0)%Continúa con el proceso sólo si no se canceló la selección.
+else
+    rutaimagen=fullfile(pathname, filename);%Almacena la ruta en una variable
+    handles.I_original = imread(rutaimagen);%Lee la imagen de la ruta seleccionada
+    axes(handles.axes1);
+    imshow(handles.I_original);
+end
 
 guidata(hObject, handles);
 
@@ -122,7 +128,7 @@ function btnReconocer_Callback(hObject, eventdata, handles)
 setappdata(0, 'imagenoriginal', handles.I_original); %Guarda la imagen en el espacio de trabajo de la aplicación
 %para que pueda ser obtenida en la siguiente función, que se encuentra en
 %otro archivo.
-numberPlateExtraction();%Realiza el procesamiento de la imagen y finaliza con el código de la placa
+run reconocimiento/numberPlateExtraction();%Realiza el procesamiento de la imagen y finaliza con el código de la placa
 %ya reconocida y almacenada en el espacio de trabajo
 handles.codigoplaca=getappdata(0, 'codigoplaca');%Recupera el código de la placa
 set(handles.inputPlacaRec,'String',handles.codigoplaca)%Muestra el código de la placa
@@ -143,12 +149,20 @@ fprintf(fid,'%s\n',handles.codigoplaca);      % to the text file, if executed a 
 fclose(fid);                      % name noPlate.txt will be open with the number plate written.
 winopen('placa_reconocida.txt')
 
+guidata(hObject, handles);
+
 % --- Executes on button press in btnExportarExcel.
 function btnExportarExcel_Callback(hObject, eventdata, handles)
 % hObject    handle to btnExportarExcel (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-xlswrite('placa_reconocida',handles.codigoplaca,1,'A1');
+
+placa=cellstr(handles.codigoplaca);%Convierte el arreglo de caracteres en arreglos de string (1 fila en 1 columna)
+%Como solo hay una fila se convierte en una sola columna.
+xlswrite('placa_reconocida',placa,1,'A1');%Almacena el código de la placa en un archivo excel
+winopen('placa_reconocida.xls')%Abre el archivo excel
+
+guidata(hObject, handles);
 
 
 function inputPlacaRec_Callback(hObject, eventdata, handles)
