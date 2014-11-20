@@ -22,7 +22,7 @@ function varargout = interfaz(varargin)
 
 % Edit the above text to modify the response to help interfaz
 
-% Last Modified by GUIDE v2.5 16-Nov-2014 23:14:57
+% Last Modified by GUIDE v2.5 19-Nov-2014 23:02:47
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -77,18 +77,18 @@ function btnIniciarWebCam_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-video=videoinput('winvideo',1,'MJPG_640x480');
-handles.video=video;
+video=videoinput('winvideo',1,'MJPG_1280x720'); %Establece el nombre del adaptador, el id del adaptador, y el formato
+handles.video=video; %Guarda el video en handles para que se mantenga en la estructura del proyecto
 
 vidRes = get(handles.video, 'VideoResolution');
 nBands = get(handles.video, 'NumberOfBands');
 set(handles.axes1,'Visible','off')
-axes(handles.axes1)
+axes(handles.axes1) %Al poner esta función el preview siguiente hará que se situe dentro de axes1
 hImage = image( zeros(vidRes(1), vidRes(2), nBands) );
 
-preview(handles.video, hImage)
+preview(handles.video, hImage) %Muestra la webcam en axes1
 
-guidata(hObject, handles);
+guidata(hObject, handles);%Actualiza handles
 
 
 % --- Executes on button press in btnCapturar.
@@ -96,24 +96,59 @@ function btnCapturar_Callback(hObject, eventdata, handles)
 % hObject    handle to btnCapturar (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-I_original = getsnapshot(handles.video);
-imshow(I_original);
-imwrite(I_original, 'original.jpg');
+handles.I_original = getsnapshot(handles.video);
+imshow(handles.I_original);
+imwrite(handles.I_original, 'original.jpg');
+
+guidata(hObject, handles);
+
+% --- Executes on button press in btnMostrarEjemplo.
+function btnMostrarEjemplo_Callback(hObject, eventdata, handles)
+% hObject    handle to btnMostrarEjemplo (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+handles.I_original = imread('ejemplo2.jpg');
+axes(handles.axes1);
+imshow(handles.I_original);
+
+guidata(hObject, handles);
 
 % --- Executes on button press in btnReconocer.
 function btnReconocer_Callback(hObject, eventdata, handles)
 % hObject    handle to btnReconocer (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-numberPlateExtraction();
 
+setappdata(0, 'imagenoriginal', handles.I_original); %Guarda la imagen en el espacio de trabajo de la aplicación
+%para que pueda ser obtenida en la siguiente función, que se encuentra en
+%otro archivo.
+numberPlateExtraction();%Realiza el procesamiento de la imagen y finaliza con el código de la placa
+%ya reconocida y almacenada en el espacio de trabajo
+handles.codigoplaca=getappdata(0, 'codigoplaca');%Recupera el código de la placa
+set(handles.inputPlacaRec,'String',handles.codigoplaca)%Muestra el código de la placa
 
-% --- Executes on button press in btnExportar.
-function btnExportar_Callback(hObject, eventdata, handles)
-% hObject    handle to btnExportar (see GCBO)
+guidata(hObject, handles);
+
+% --- Executes on button press in btnExportarTxt.
+function btnExportarTxt_Callback(hObject, eventdata, handles)
+% hObject    handle to btnExportarTxt (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
+%Las siguientes lineas almacenan el código de la placa en un
+%archivo txt-----------------------------------------------------------
+
+fid = fopen('placa_reconocida.txt', 'wt'); % This portion of code writes the number plate
+fprintf(fid,'%s\n',handles.codigoplaca);      % to the text file, if executed a notepad file with the
+fclose(fid);                      % name noPlate.txt will be open with the number plate written.
+winopen('placa_reconocida.txt')
+
+% --- Executes on button press in btnExportarExcel.
+function btnExportarExcel_Callback(hObject, eventdata, handles)
+% hObject    handle to btnExportarExcel (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+xlswrite('placa_reconocida',handles.codigoplaca,1,'A1');
 
 
 function inputPlacaRec_Callback(hObject, eventdata, handles)
@@ -167,5 +202,9 @@ function inputText_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
+
+
+
+
 
 

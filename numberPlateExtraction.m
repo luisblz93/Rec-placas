@@ -1,7 +1,7 @@
 function numberPlateExtraction
 %NUMBERPLATEEXTRACTION extracts the characters from the input number plate image.
 
-f=imread('2.jpg'); % Reading the number plate image.
+f=getappdata(0, 'imagenoriginal'); % Reading the number plate image.
 f=imresize(f,[400 NaN]); % Resizing the image keeping aspect ratio same.
 g=rgb2gray(f); % Converting the RGB (color) image to gray (intensity).
 g=medfilt2(g,[3 3]); % Median filtering to remove noise.
@@ -48,10 +48,15 @@ if ~isempty(r) % If succesfully indices of desired boxes are achieved.
         end
         noPlate=[noPlate letter]; % Appending every subsequent character in noPlate variable.
     end
-    fid = fopen('noPlate.txt', 'wt'); % This portion of code writes the number plate
-    fprintf(fid,'%s\n',noPlate);      % to the text file, if executed a notepad file with the
-    fclose(fid);                      % name noPlate.txt will be open with the number plate written.
-    winopen('noPlate.txt')
+    %Las siguientes lineas comentadas almacenan el código de la placa en un
+    %archivo txt-----------------------------------------------------------
+    %fid = fopen('noPlate.txt', 'wt'); % This portion of code writes the number plate
+    %fprintf(fid,'%s\n',noPlate);      % to the text file, if executed a notepad file with the
+    %fclose(fid);                      % name noPlate.txt will be open with the number plate written.
+    %winopen('noPlate.txt')
+    
+    setappdata(0, 'codigoplaca', noPlate);%Almacena el código reconocido de la placa para que pueda
+    %ser usado en la interfaz y mostrado en el input.
     
 %     Uncomment the portion of code below if Database is  to be organized. Since my
 %     project requires database so I have written this code. DB is the .mat
@@ -63,8 +68,7 @@ if ~isempty(r) % If succesfully indices of desired boxes are achieved.
 %             disp(DB(x));
 %             disp('*-*-*-*-*-*-*');
 %         end
-%     end
-    
+%     end  
 else % If fail to extract the indexes in 'r' this line of error will be displayed.
     fprintf('Unable to extract the characters from the number plate.\n');
     fprintf('The characters on the number plate might not be clear or touching with each other or boundries.\n');
