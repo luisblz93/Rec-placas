@@ -1,10 +1,7 @@
 function numberPlateExtraction
 %NUMBERPLATEEXTRACTION extracts the characters from the input number plate image.
 
-f=getappdata(0, 'imagenoriginal'); % Reading the number plate image.
-f=imresize(f,[400 NaN]); % Resizing the image keeping aspect ratio same.
-g=rgb2gray(f); % Converting the RGB (color) image to gray (intensity).
-g=medfilt2(g,[3 3]); % Median filtering to remove noise.
+g=getappdata(0, 'imagengrises');%Obtiene la imagen en grises
 se=strel('disk',1); % Structural element (disk of radius 1) for morphological processing.
 gi=imdilate(g,se); % Dilating the gray image with the structural element.
 ge=imerode(g,se); % Eroding the gray image with structural element.
@@ -73,4 +70,5 @@ else % If fail to extract the indexes in 'r' this line of error will be displaye
     fprintf('Unable to extract the characters from the number plate.\n');
     fprintf('The characters on the number plate might not be clear or touching with each other or boundries.\n');
 end
+
 end

@@ -22,7 +22,7 @@ function varargout = interfaz(varargin)
 
 % Edit the above text to modify the response to help interfaz
 
-% Last Modified by GUIDE v2.5 19-Nov-2014 23:02:47
+% Last Modified by GUIDE v2.5 20-Nov-2014 10:21:50
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -119,15 +119,27 @@ end
 
 guidata(hObject, handles);
 
-% --- Executes on button press in btnReconocer.
-function btnReconocer_Callback(hObject, eventdata, handles)
-% hObject    handle to btnReconocer (see GCBO)
+% --- Executes on button press in btnConvertirGrises.
+function btnConvertirGrises_Callback(hObject, eventdata, handles)
+% hObject    handle to btnConvertirGrises (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
 setappdata(0, 'imagenoriginal', handles.I_original); %Guarda la imagen en el espacio de trabajo de la aplicación
 %para que pueda ser obtenida en la siguiente función, que se encuentra en
 %otro archivo.
+run reconocimiento/conversionGrises();%Realiza el procesamiento de la imagen y finaliza con el código de la placa
+axes(handles.axes1);
+imshow(getappdata(0, 'imagengrises'));%Muestra la imagen en grises.
+
+guidata(hObject, handles);
+
+% --- Executes on button press in btnReconocer.
+function btnReconocer_Callback(hObject, eventdata, handles)
+% hObject    handle to btnReconocer (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
 run reconocimiento/numberPlateExtraction();%Realiza el procesamiento de la imagen y finaliza con el código de la placa
 %ya reconocida y almacenada en el espacio de trabajo
 handles.codigoplaca=getappdata(0, 'codigoplaca');%Recupera el código de la placa
@@ -216,6 +228,8 @@ function inputText_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
+
+
 
 
 
