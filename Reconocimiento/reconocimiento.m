@@ -1,32 +1,15 @@
-function numberPlateExtraction
-%NUMBERPLATEEXTRACTION extracts the characters from the input number plate image.
+function reconocimiento
 
-g=getappdata(0, 'imagengrises');%Obtiene la imagen en grises
-se=strel('disk',1); % Structural element (disk of radius 1) for morphological processing.
-gi=imdilate(g,se); % Dilating the gray image with the structural element.
-ge=imerode(g,se); % Eroding the gray image with structural element.
-gdiff=imsubtract(gi,ge); % Morphological Gradient for edges enhancement.
-gdiff=mat2gray(gdiff); % Converting the class to double.
-gdiff=conv2(gdiff,[1 1;1 1]); % Convolution of the double image for brightening the edges.
-gdiff=imadjust(gdiff,[0.5 0.7],[0 1],0.1); % Intensity scaling between the range 0 to 1.
-B=logical(gdiff); % Conversion of the class from double to binary. 
-% Eliminating the possible horizontal lines from the output image of regiongrow
-% that could be edges of license plate.
-er=imerode(B,strel('line',50,0));
-out1=imsubtract(B,er);
-% Filling all the regions of the image.
-F=imfill(out1,'holes');
-% Thinning the image to ensure character isolation.
-H=bwmorph(F,'thin',1);
-H=imerode(H,strel('line',3,90));
-% Selecting all the regions that are of pixel area more than 100.
-final=bwareaopen(H,100);
+%Adquisición de la imagen
+final=getappdata(0, 'imagenfinal'); %Lee la imagen final del procesamiento del espacio de trabajo de la aplicación.
+
 % final=bwlabel(final); % Uncomment to make compitable with the previous versions of MATLAB®
 % Two properties 'BoundingBox' and binary 'Image' corresponding to these
 % Bounding boxes are acquired.
 Iprops=regionprops(final,'BoundingBox','Image');
 % Selecting all the bounding boxes in matrix of order numberofboxesX4;
 NR=cat(1,Iprops.BoundingBox);
+
 % Calling of controlling function.
 r=controlling(NR); % Function 'controlling' outputs the array of indices of boxes required for extraction of characters.
 if ~isempty(r) % If succesfully indices of desired boxes are achieved.
